@@ -155,14 +155,29 @@
 <style lang="sass">
 @import url('https://fonts.googleapis.com/css?family=Roboto')
 
-$color: #FF9800
+html, body, .brand-frame
+    height: 100%
+    overflow: hidden
+
+.brand-frame
+    width: 100%
+
+$color: #E0001A
+
+#app
+    position: absolute
+    height: 500px
+    width: 330px
+    bottom: 40px
+    right: 40px
+    box-shadow: grey 0px 0px 22px
+    background-color: #F2F2F2
 
 \:root
   --mdc-theme-primary: $color
 
 body
     margin: 0
-    background-color: #F5F5F5
     font-family: 'Roboto', sans-serif
 
 .wrapper
@@ -172,6 +187,9 @@ body
 
 .wrapper.ai-window
     padding: 1rem
+    height: 100%
+    overflow-y: scroll
+    box-sizing: border-box
 
 .up
     font-size: 32px
@@ -191,13 +209,17 @@ body
     background-color: white
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
     z-index: 999
-    position: fixed
+    position: absolute
     width: 100%
+
+.query > .wrapper
+    display: flex
+    justify-content: space-between
+    align-items: center
 
 .queryform
     border: 0
     width: 100% - 20%
-    margin-left: 60px
     font-size: 16px
     outline: none
     color: rgba(0,0,0,0.8)
@@ -207,21 +229,12 @@ body
         width: 100% - 35%
 
 .iicon
-    margin-left: 20px
-    position: absolute
-    vertical-align: middle
     color: rgba(0,0,0,0.8)
     cursor: pointer
+    margin: 0 12px
 
 .recording
     color: #F44336
-
-.iicon.t2s
-    margin-left: 10px
-    margin-right: 20px
-
-    @media screen and (max-width: 720px)
-        right: 0
 
 .chat-window
     width: 100%
