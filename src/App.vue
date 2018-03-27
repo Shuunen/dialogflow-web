@@ -1,6 +1,7 @@
 <template>
 <section id="app" :class="{ closeable: Config.features.closeable }">
 
+    <transition name="fade">
     <div class="app-wrapper" v-show="displayed">
             
         <div class="app-title" v-if="Config.features.title">
@@ -153,8 +154,11 @@
         </main>
 
     </div>
+    </transition>
 
-    <div class="icon" :class="[displayed ? 'close':'open']" @click="displayed = !displayed" v-if="Config.features.closeable"></div>
+    <transition name="fade">
+    <div class="icon" :class="[displayed ? 'close':'open']"  @click="displayed = !displayed" v-if="Config.features.closeable"></div>
+    </transition>
 
 </section>
 </template>
@@ -169,7 +173,14 @@ html, body, .brand-frame
 .brand-frame
     width: 100%
 
-$color: #E0001A
+$red: #E0001A
+$grey: #F2F2F2
+
+.fade-enter-active, .fade-leave-active
+    transition: opacity 0.25s ease-out
+
+.fade-enter, .fade-leave-to
+    opacity: 0
 
 #app
     position: absolute
@@ -194,7 +205,7 @@ $color: #E0001A
     background-color: var(--mdc-theme-primary)
 
 \:root
-  --mdc-theme-primary: $color
+  --mdc-theme-primary: $red
 
 body
     margin: 0
@@ -211,8 +222,9 @@ body
     position: absolute
     bottom: -70px
     right: 0
+    animation: msg .25s linear
     &.open
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABvUExURQAAAOQpP+xmdvGSnec6TvfAxvGUneY0Setba/CQnOpWaOxmdfCFkOY1SuMZMOYyRu+Ile+AjetbbO5teuhIWvGSnu59i+AAGv///+IRKeEFHv79/uQfNvGPmvWpsv709fvh5OlKXO97iPfAxvnP1G0sMa4AAAAXdFJOUwDwhn63ORj+/gtEpUmT8dxpqrws7rzgxZBfTgAAAz5JREFUWMPtmce6ozAMhWnBmJKQMh+4UAy8/zMOhBRAMi0sZjFndy/h93GXhGEsiFIa2tZTdtj+Yfwi9x5HD8KSjxh5RPHd3UsLLjJBJC/BDubpemGJVuxyPW3DBSZPZsXN4HQgbhvSXoPrkfYae85K3BPpLJmkvplskunPrkx6lclGsesMkUY82SzuaInU2cGbIe7k6Yk6HidelrfKKiW3EG/4b1VeFiLtJYqmwpk3yPuD+WNemU5U5AQj/pnyQoa5a1JERYb8loWT/YE0y7IixdUgvyajPePeYIdlnmpVeMgwDs/IGHZC1iKdIVbAARucFO4F9neW1054BoiXr0ULPOT5PK8lVuAd62MQnjAVzmsXYvlZlBV7633yuFqDssR5NZHQuijU6zVLN4JcM8ElSzJkgmo5tmgDg0SzALNnU0Uxxnmf97ndHzJgBLNUB0xIXVb1aCMO7TwPCRdsd1ZqgHX3kA0ej3Ht2Hd9toFBJeaWCs/EYEwnsjb1uJvmqmq+zRUMORgp2Oi8TtdKgemkRgx3SbkaCM4IHhsW3MZiNTBL4CDCIWTpD0DH8I4FegY5FkgMeSxQGsmxwOQ/8F8EsmOB7Ph1qI4FquP3cnQokEfIlbIBCLtnGy77AQiOKuYa9DsrLO+1mgdvPdVezNHy7SQ0t0wO7qOoi66//1WFJubCTQuw5HgXaVNzKUgSVYOH2qDHfbQULIVxOR5KCDjHQZ9RDHYfQYi1xMe2BgblK7cY3qSkmbpppIcaLOH19s7Q/GFTrCom/tBxEEhmwfxP2jg2Pgr2GZ4PwJi9u+Tf8iW+U0TptatdoHlKMmNwkom+gKJN6iTO6xqaz0hHqR57vZSRLgJGeEWO5bjjZM9mo+iraHKvfUlWJYZTaCY8ruHQQad55T0rci1OgLmtK4In/rdJfY0+QJPKm0oRpitLKFAkOJHkB0mkwhSe9/POIVYV8XcTzz5euNlL1PH2EvW8lmhu55nhYdXD/kRYqiBe2bZi33KJ8/5YbZI/wlVF2Ou6Iiw3r/TIMvE5OG0qZJPZseQkOG0ttccO0RUUpROf9nwNuMcR/BogL1F83/+9grq2FTmKPKWcyLLdhYn4C6tjzeViO/lsAAAAAElFTkSuQmCC')
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGcAAABnCAMAAAAqn6zLAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAACZFBMVEUAAADgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrgABrhCiPoRFfwgo/1qrP50NX96+3+9/j////98vP85Of3wcfznKbta3rlLELgARvhDCXrXW73usH++vv86evylJ/nOU3jGTDxipb+8/TrWmvgBB7xiJT62NzpSFvpS1374eT1rrbiFCzhBR7xjJj85unoQ1biDyf3v8b//PztZ3bjGDDgAx3iECj609f1sLjhBh/hCCH4w8n1r7fymKPyl6LrWGnvf4z97O72tLzqUWPnPFD4xsz5ys/zoKrzm6Xud4XrW2zlKkD3wMbpSVz+9PX0p7DsYnLqUmT+9vfwgI3kIDfhCyT73eD98PLtb37ucoDvfYriEirudYPwhZHkJTvsYHD619vsY3P729/4yc/3vcTgAhzlKT/xi5f86uztbHv4yM74xMr61NjucX/zmaPjHDP2tb3lKD7mNEnoQFP4x833u8LznqjudoT2uL/5zNH4wsjsZHT//f3ykp3taXj74OPxj5r++frpTF7mLkPvfovkIjn3vsXrV2j85+nxjZniDSbjGzL2t7750dbqT2H/+/vwhJHhByDoQlXylaD2s7vqU2XsZXX//v72srrnOEz74uX85ejudILmMEX++PniEyvlJjz+9fb3vMPveIbucH/rWWroRVjkHzYLRf77AAAALXRSTlMAAQIDBAs+bZq+3vwHRI7LBk+o9CWN7Dqx/je4Hqd09irNa/cMqSDUNOhC9Ur8+3itAAAAAWJLR0Q13rbZawAABOdJREFUaN7dmul/E0UYx9MmTdKmSZr0vu+LMoWWDuWqIIpaPIqKxapBQFDAAylQoIAUtWiLFkWpSj3qAdb7VgRPwAv+KXbTNNnjeZ7dTPKZF/7eNNnpPN/PbGZn5/k943Akp4xMp9PldGZmJNnPtrLcHm92jo/NyZeT7fW4s9LKyPUHggmCVr5gwJ+bHkheKJzPKOWHQ3kpUwoKi5i1igoLUqIUl5TaoKgqLSkWppSV24TMqrxMiFJRmRRFVWVF0hRXVXXSGMaqq1zJYWpqBSiqamuSwdTVC2IYq6+zTWloFKaoamywh2lqTgnDWHOTHUxLa4oYxlpbrDHz2lLGMNY2zwozX2Q6m1U932I06cEoIHJELfRNa1+wsKNzURfni7uXLF22fAV564jfqImaAj03rFzFdbpx9U0EqhWddQ3EhL55zS0cUOett6FdmrHnCH8823u7OKK1t6O9GmFMHdrhjjs5obv6sH7gElSDrWnr7ua07rkX6VlfY8a4sBV6/X3cSv0bkL615tdEFfKv93daYhStGYB7VxkxFcgD+sCDdjCcPxQBu1cb37CVMGbjw/YwnG+CR1Spx5Qhd22zXQznW+AI+s0JsrN5xD6G861giHItphjG9G0jAz/62PYd2u87H49rS+KZ0u7rSmDOEyTmSbZuB9r4VDxISQJTAO86d5GYpxnbjbUN9iZmRWliS1wID2cPydnL2D7175CpZdt+3UpUOIfJg7fqB/pJzm7GDg5zfuiw4Xr3kR59nKK8GCcED+cZenqpa83RkWPPPqe7+vxoxBQoFOOEYc5xmvNC7B33ovbiyBgQKDyLyYXTqHFuoRPmUb8Evl/zZzM+Pzycl604fGLDgtGTuiv9PWAof5QTgDkdlhxA8JsoEOUEYc4rIpxXwVBBFZMFZ9IDq0Q4p8BYPjX9d8PDeU0Ew1+Hg7kVjgduOi3EmYCDeRSOF26aFOJ0wsG8CicbbnojnZxshZMjgZOjcHwSOD7F6GISOCzDkSmFk+lwSuE4pXFcUjiu/919kzXfZD0/stYDaeubrPXam07Om3AwL/4+FeO8BQfz4PsDMc4ZOJgb3++Icabg6ZaF79/EOLAJEzTvR9fPZX5vi2CQfW8A2F+/YxFqmGp8F/55/EC+8B6NmX6fav0AxMTyBX3+E/mQ5Hy0iWg8exTkhMF87hyFWXvgLNG6Gb5tITg/PYUHGvp4hsD0fwJi4vmpId+OfIpG+mzj5wTnC3g48Xzb6B+0n0QCTbERAtP9JYjR+AdGPyQCGyH72VeLccw04ipq/BCzv3MOcESPsBVfE8OZgTE6f8fsV0UWGsIM7mNsisCcQaxsnV8F+G+G9e2bXYx9O41jOhDj0uC/mf1EHee7739g7MchHPMThjH4iWZ/VMs5P65c+Bm1ynnXBYRi9kdNfm+cc/GXX5WvAzMXUczEcgxj9ntN/nWMM3ws+pCfnkApv42OoRjAvzb68Qrn9/N//Bn93Nd7CaPsBPypuCA/3lhfuDx5OfbpyolBmPHX3/+MM0pIiROul0z+C+nCf1evjTFaSL2ErP8ICK3/0PWsZNVKVFFb0lHUnFUbWUOVVG+UVj+VVg+WVt+WVq+Xdv7AIes8hUPa+RBp510css7vqJJzHkmVnPNVquScF1Ml5/xbVFLO88Uk43yiRqLnLa8D1DVOHkBJ6tIAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDMtMjdUMTY6Mjg6NDMrMDA6MDCKWkQtAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTAzLTI3VDE2OjI4OjQzKzAwOjAw+wf8kQAAAABJRU5ErkJggg==')
     &.close
         background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAACEUExURQAAAO99iPGSneY1Suc6Tuxkc/a8wt8AGfOkreY4TOQoPuxmdeIQKOxmdvCEkfSvtu5+jOtbbOUqQOYzR+lPYeAAGuADHf309eEIIeIXL/vj5ulSZOIQKOUrQehGWeQgNvzs7vWzu/KcpvSosetfb+1vfve/xfnP1Pra3u+CjvGQnP77+0d1VWYAAAAVdFJOUwAcfpO3RDb9Df70peuGrkxtvOjb67WmN6MAAAPqSURBVFjDrZnnloIwEIWRosSClUAgdCzo+7/fTkBdNYU6f/aIy3fuZZIZMmpaS9i2vdU3dehb+KCNCXu2M04Rdd9Bo5Oxmw2E2tbqSFxBkOPK6s+cO2LaU+nRmffDrZbYVQZeruYT4voh9S64Bql3kWf6bufwzXlrapdur1iqE247xO0ZxFEQbcN3e4dvSom2id0BgaXEYTw50Vy33bmAWC/Y3/rT+6qYuMeLdjGSf8F7nudgd+EODuz88izijgG61PrZH8gdGWj7tWD2eCwQ7z8TsyPu6KAflWJ2dCeI4+wN3OApgHjzFnjgN2iCIsW+9hFK+K8PL4k7TiCOyvwsJ9KoupcJf5chE4hJeQmulYyI0f0aXEKCJRJ1/j4aXtL0WiFf7Le6ekEWU/6bJtGm4KaouqYeaKQCv6DPSy/nRJDJukjMEpGKqLp43vXOuwa/N88Dnkg9YZ51YSnx0VnomsZVrU/8NNzNl+PFt0Yg1q6xwK8kX6ww2khS7BiRuf7U4sc5+M3Efutnb2tbLKueL9fvdOLab3BRrFC81Tbycowb13f0dE1R3uRXsYc2n4tmwW/Acwau88b102+p4i1MrVQ1jDozjWvwC+slyMpI2btDDSk7UOP6Bq4JAn2pWh8r3FqibmmN61seh4xXlElLpUs03NIjwXWWpre86OCXWdJamy6UMnAN0e6XRTuwcf14sPx2qOwdgJjAlgHg5UwmAWISF8HD8x5BjiieAEjDIoB6dYVcF4KiygGpGogJWy9Bdq6yANZj2KaRapF6YYNf4BVhEpVADPK45TlGWqwCYhoCJs2hIfmkLNJ217F2UgCZXzAK+kAWTsqidq3UeNIMRfli+WV+GwROwlbX0Jp1KRD0vfz+C04fQaEi6tqMSIDQ7f/9Pi/VroNc7hranh2KgU+DxdfNr4tSjTE0ZkMIBH3M728Knq4zmUb2dmP5AqDfpDQPf+sBaFS4xuxN2z7wQEVCQWPBPYrvt6UVB2R+Uy+4x6KNBotJ6nrVnACSXyD0N+ZX8uifGu8xV23J8yTAvX7Rcxbc5Au43uDQD7hNaH4cen57XVbF8sICxEpQv/8PPybfmUqk2rKYIEG/Mv/PZdwrIvZ9ZZkSfU+sz5PoBKeK/aRHPXhn+BqQ6HQsj37PcMafHvc/h3r7NI4Xc0OCbTSGF235GYG1Xg/mrS3RVMRaT8sbTFzIeAOJCh4QD/2BB0s9Pey5HrG5bZkg9hv4UafDiPPUWSSOrU5DWKfbEBYvHXvCMXGvuTNDIuULv49W876j9p0ZyZpUZO7mQ34NmO0Mfn5PjsZuNub3Cn1jmCGqIzSNjd72W8Ufx+2wiwy8H60AAAAASUVORK5CYII=')
 
@@ -221,7 +233,7 @@ body
     height: 100%
     overflow-y: auto
     flex: 1
-    background-color: #F2F2F2
+    background-color: $grey
 
 .up, .down
     font-size: 32px
@@ -238,10 +250,9 @@ body
     margin-top: 30%
 
 .query
-    background-color: white
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
+    border-top: 1px solid darkgrey
+    background-color: $grey
     z-index: 999
-    width: 100%
     &.bottom
         order: 1
 
@@ -256,7 +267,7 @@ body
     width: 100% - 20%
     font-size: 16px
     outline: none
-    color: rgba(0,0,0,0.8)
+    background: transparent
     font-weight: 500
     margin: 0 12px
 
@@ -275,16 +286,19 @@ body
 
 .bubble
     max-width: 300px
-    background-color: #E1E1E1
+    min-width: 50px
+    background-color: $red
+    color: white
     padding: 16px
-    border-radius: 8px
-    color: rgba(0,0,0,0.7)
+    border-radius: 40px 40px 0
     float: right
     animation: msg .25s linear
 
 .bubble.bot
+    color: black
     background-color: white
     float: left
+    border-radius: 40px 40px 40px 0
     margin-right: 10px
 
 td
@@ -307,7 +321,7 @@ td
 
 .mdc-fab
     background-color: white
-    color: $color
+    color: $red
     
 .rightnav
     margin-left: -32px
@@ -354,12 +368,12 @@ td
 
 .suggestion.link
     color: white
-    background-color: $color
-    border: 2px $color solid
+    background-color: $red
+    border: 2px $red solid
 
 .suggestion.link:active
-    background-color: darken($color, 10%)
-    border: 2px darken($color, 10%) solid
+    background-color: darken($red, 10%)
+    border: 2px darken($red, 10%) solid
 
 .mdc-list-item__start-detail
     border-radius: 50%
@@ -388,8 +402,8 @@ td
     border-bottom: 2px solid transparent
 
 .copyright a:hover
-    color: $color
-    border-bottom: 2px solid $color
+    color: $red
+    border-bottom: 2px solid $red
     
 </style>
 
