@@ -6,7 +6,7 @@
     </div>
 
     <!-- The input -->
-    <div class="query">
+    <div class="query" :class="{ bottom: Config.features.inputBottom }">
         <div class="wrapper" v-if="micro == false">
             <i class="material-icons iicon" v-if="Config.features.recognition" @click="microphone(true)">mic</i>
             <input :aria-label="$t('generic.inputPlaceholder')" autocomplete="off" v-model="query" class="queryform" @keyup.enter="submit()" :placeholder="$t('generic.inputPlaceholder')" autofocus type="text">
@@ -24,11 +24,10 @@
         <!-- Display Welcome Message -->
         <div v-if="answers.length == 0 && online == true">
             <h1 class="title mdc-typography--headline">
-                <div class="material-icons up">arrow_upward</div>
-                <br>
-                <br>
-                    {{ $t("welcome.title") }}
-                    <p class="mdc-typography--body2">{{ $t("welcome.subtitle") }}</p>
+                <div class="material-icons up" v-if="!Config.features.inputBottom">arrow_upward</div>
+                {{ $t("welcome.title") }}
+                <p class="mdc-typography--body2">{{ $t("welcome.subtitle") }}</p>
+                <div class="material-icons down" v-if="Config.features.inputBottom">arrow_downward</div>
             </h1>
         </div>
 
@@ -38,8 +37,8 @@
                 <div class="material-icons up">cloud_off</div>
                 <br>
                 <br>
-                    {{ $t("offline.title") }}
-                    <p class="mdc-typography--body2">{{ $t("offline.subtitle") }}</p>
+                {{ $t("offline.title") }}
+                <p class="mdc-typography--body2">{{ $t("offline.subtitle") }}</p>
             </h1>
         </div>
 
@@ -154,7 +153,7 @@
 </template>
 
 <style lang="sass">
-@import url('https://fonts.googleapis.com/css?family=Roboto')
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700')
 
 html, body, .brand-frame
     height: 100%
@@ -182,7 +181,7 @@ $color: #E0001A
     justify-content: center
     align-items: center
     color: white
-    font-weight: bold
+    font-weight: 600
     background-color: var(--mdc-theme-primary)
 
 \:root
@@ -190,12 +189,7 @@ $color: #E0001A
 
 body
     margin: 0
-    font-family: 'Roboto', sans-serif
-
-.wrapper
-    max-width: 500px
-    margin-left: auto
-    margin-right: auto
+    font-family: 'Open Sans', sans-serif
 
 .wrapper.ai-window
     padding: 1rem
@@ -203,11 +197,12 @@ body
     overflow-y: auto
     flex: 1
 
-.up
+.up, .down
     font-size: 32px
     background-color: white
     padding: 10px
     border-radius: 50%
+    margin: 20px
 
 .title
     vertical-align: middle
@@ -221,6 +216,8 @@ body
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
     z-index: 999
     width: 100%
+    &.bottom
+        order: 1
 
 .query > .wrapper
     display: flex

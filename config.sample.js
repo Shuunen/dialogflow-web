@@ -8,8 +8,10 @@ export default {
         speech: 'en-GB' // Nice british accent
     },
     features: {
+        title: false,
         about: true,
         recognition: false,
-        speech: false
+        speech: false,
+        inputBottom: false
     }
 }

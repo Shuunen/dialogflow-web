@@ -31,7 +31,7 @@ export default {
             developedBy: 'Fièrement propulsé par'
         },
         generic: {
-            inputPlaceholder: 'Demandez-moi quelque chose...',
+            inputPlaceholder: 'Ecris ton message',
             defaultSpeech: 'Allez-y, je vous écoute...'
         }
     }
