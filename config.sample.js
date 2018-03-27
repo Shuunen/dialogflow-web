@@ -12,6 +12,7 @@ export default {
         about: true,
         recognition: false,
         speech: false,
+        closeable: false,
         inputBottom: false
     }
 }

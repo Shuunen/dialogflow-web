@@ -1,154 +1,161 @@
 <template>
-<section id ="app">
+<section id="app" :class="{ closeable: Config.features.closeable }">
 
-    <div class="app-title" v-if="Config.features.title">
-        {{ $t("title") }}
-    </div>
-
-    <!-- The input -->
-    <div class="query" :class="{ bottom: Config.features.inputBottom }">
-        <div class="wrapper" v-if="micro == false">
-            <i class="material-icons iicon" v-if="Config.features.recognition" @click="microphone(true)">mic</i>
-            <input :aria-label="$t('generic.inputPlaceholder')" autocomplete="off" v-model="query" class="queryform" @keyup.enter="submit()" :placeholder="$t('generic.inputPlaceholder')" autofocus type="text">
-            <i class="material-icons iicon t2s" @click="mute(true)" v-if="Config.features.speech && muted == false">volume_up</i>
-            <i class="material-icons iicon t2s" @click="mute(false)" v-if="Config.features.speech && muted == true">volume_off</i>
-        </div>
-        <div class="wrapper" v-else>
-            <i class="material-icons iicon recording" @click="microphone(false)">mic</i>
-            <input class="queryform" :placeholder="speech" readonly>   
-        </div>
-    </div>
-
-    <main class="wrapper ai-window">
-
-        <!-- Display Welcome Message -->
-        <div v-if="answers.length == 0 && online == true">
-            <h1 class="title mdc-typography--headline">
-                <div class="material-icons up" v-if="!Config.features.inputBottom">arrow_upward</div>
-                {{ $t("welcome.title") }}
-                <p class="mdc-typography--body2">{{ $t("welcome.subtitle") }}</p>
-                <div class="material-icons down" v-if="Config.features.inputBottom">arrow_downward</div>
-            </h1>
+    <div class="app-wrapper" v-show="displayed">
+            
+        <div class="app-title" v-if="Config.features.title">
+            {{ $t("title") }}
         </div>
 
-        <!-- Display offline message -->
-        <div v-if="answers.length == 0 && online == false">
-            <h1 class="title mdc-typography--headline">
-                <div class="material-icons up">cloud_off</div>
-                <br>
-                <br>
-                {{ $t("offline.title") }}
-                <p class="mdc-typography--body2">{{ $t("offline.subtitle") }}</p>
-            </h1>
+        <!-- The input -->
+        <div class="query" :class="{ bottom: Config.features.inputBottom }">
+            <div class="wrapper" v-if="micro == false">
+                <i class="material-icons iicon" v-if="Config.features.recognition" @click="microphone(true)">mic</i>
+                <input :aria-label="$t('generic.inputPlaceholder')" autocomplete="off" v-model="query" class="queryform" @keyup.enter="submit()" :placeholder="$t('generic.inputPlaceholder')" autofocus type="text">
+                <i class="material-icons iicon t2s" @click="mute(true)" v-if="Config.features.speech && muted == false">volume_up</i>
+                <i class="material-icons iicon t2s" @click="mute(false)" v-if="Config.features.speech && muted == true">volume_off</i>
+            </div>
+            <div class="wrapper" v-else>
+                <i class="material-icons iicon recording" @click="microphone(false)">mic</i>
+                <input class="queryform" :placeholder="speech" readonly>   
+            </div>
         </div>
 
-        <!-- Chat window -->
-        <table v-for="a in answers" :key="a.id" class="chat-window">
+        <main class="wrapper ai-window">
 
-            <!-- Your messages -->
-            <tr>
-                <td class="bubble">{{a.result.resolvedQuery}}</td>
-            </tr>
+            <!-- Display Welcome Message -->
+            <div v-if="answers.length == 0 && online == true">
+                <h1 class="title mdc-typography--headline">
+                    <div class="material-icons up" v-if="!Config.features.inputBottom">arrow_upward</div>
+                    {{ $t("welcome.title") }}
+                    <p class="mdc-typography--body2">{{ $t("welcome.subtitle") }}</p>
+                    <div class="material-icons down" v-if="Config.features.inputBottom">arrow_downward</div>
+                </h1>
+            </div>
 
-            <!-- Dialogflow messages -->
-            <tr>
-                <td>
+            <!-- Display offline message -->
+            <div v-if="answers.length == 0 && online == false">
+                <h1 class="title mdc-typography--headline">
+                    <div class="material-icons up">cloud_off</div>
+                    <br>
+                    <br>
+                    {{ $t("offline.title") }}
+                    <p class="mdc-typography--body2">{{ $t("offline.subtitle") }}</p>
+                </h1>
+            </div>
 
-                    <!-- Bot message types / Speech -->
+            <!-- Chat window -->
+            <table v-for="a in answers" :key="a.id" class="chat-window">
 
-                    <div v-if="a.result.fulfillment.speech" class="bubble bot">
-                        {{a.result.fulfillment.speech}}
-                    </div>
+                <!-- Your messages -->
+                <tr>
+                    <td class="bubble">{{a.result.resolvedQuery}}</td>
+                </tr>
 
-                    <!-- Google Assistant output -->
-                    <div v-for="r in a.result.fulfillment.messages" :key="r.speech">
+                <!-- Dialogflow messages -->
+                <tr>
+                    <td>
 
-                        <!-- Bot message types / Card -->
+                        <!-- Bot message types / Speech -->
 
-                        <div class="mdc-card" v-if="r.type == 'basic_card'">
-                            <img :title="r.image.accessibilityText" :alt="r.image.accessibilityText" class="mdc-card__media-item" :src="r.image.url" v-if="r.image">
-                            <section class="mdc-card__primary">
-                                <h1 class="mdc-card__title mdc-card__title">{{r.title}}</h1>
-                                <br>
-                                <h2 class="mdc-card__subtitle">{{r.subtitle}}</h2>
-                            </section>
-                            <section class="mdc-card__supporting-text">
-                                {{r.formattedText}}
-                            </section>
-                            <section class="mdc-card__actions" v-for="button in r.buttons" :key="button">
-                                <a class="mdc-button mdc-button--compact mdc-button--primary mdc-card__action" target="_blank" :href="button.openUrlAction.url">{{button.title}} <i class="material-icons openlink">open_in_new</i></a>
-                            </section>
+                        <div v-if="a.result.fulfillment.speech" class="bubble bot">
+                            {{a.result.fulfillment.speech}}
                         </div>
 
-                        <!-- Bot message types / Carousel Card -->
+                        <!-- Google Assistant output -->
+                        <div v-for="r in a.result.fulfillment.messages" :key="r.speech">
 
-                        <div class="slider" v-if="r.type == 'carousel_card'">
-                            <carousel 
-                                    :perPage="1" 
-                                    :navigationEnabled="true"
-                                    :paginationEnabled="false"
-                                    navigationNextLabel="<button class='mdc-fab material-icons rightnav'><span class='mdc-fab__icon'>keyboard_arrow_right</span></button>"
-                                    navigationPrevLabel="<button class='mdc-fab material-icons leftnav'><span class='mdc-fab__icon'>keyboard_arrow_left</span></button>"
-                                    :navigationClickTargetSize="0"
-                                    :loop="true">
+                            <!-- Bot message types / Card -->
 
-                                <slide v-for="item in r.items" :key="item.id">
-                                    <div class="mdc-card slide">
-                                        <img class="mdc-card__media-item" :src="item.image.url" v-if="item.image">
-                                        <section class="mdc-card__primary">
-                                            <h1 class="mdc-card__title mdc-card__title mdc-theme--primary" @click="autosubmit(item.optionInfo.key)">{{item.title}}</h1>
-                                        </section>
-                                        <section class="mdc-card__supporting-text">
-                                            {{item.description}}
-                                        </section>
-                                    </div>
-                                </slide>
-                            </carousel>
-                        </div>
-
-                        <!-- Bot message types / List -->
-
-                        <div class="mdc-list-group mdc-card" v-if="r.type == 'list_card'">
-                            <h3 class="mdc-list-group__subheader">{{r.title}}</h3>
-                            <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list" v-for="item in r.items" :key="item" @click="autosubmit(item.optionInfo.key)">
-                                <li class="mdc-list-item">
-                                    <img :title="item.image.accessibilityText" :alt="item.image.accessibilityText" class="mdc-list-item__start-detail" width="56" height="56" :src="item.image.url" v-if="item.image"/>
-                                    <span class="mdc-list-item__text">
-                                        {{item.title}}
-                                    <span class="mdc-list-item__text__secondary">{{item.description}}</span>
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Bot message types / Link Chip -->
-
-                        <div v-if="r.type == 'link_out_chip'" class="chips">
-                            <a class="suggestion link" :href="r.url" target="_blank">
-                                {{r.destinationName}} <i class="material-icons openlink">open_in_new</i>
-                            </a>
-                        </div>
-
-                        <!-- Bot message types / Suggestion Chip -->
-
-                        <div v-if="r.type == 'suggestion_chips'" class="chips">
-                            <div class="suggestion" @click="autosubmit(s.title)" v-for="s in r.suggestions" :key="s">
-                                {{s.title}}
+                            <div class="mdc-card" v-if="r.type == 'basic_card'">
+                                <img :title="r.image.accessibilityText" :alt="r.image.accessibilityText" class="mdc-card__media-item" :src="r.image.url" v-if="r.image">
+                                <section class="mdc-card__primary">
+                                    <h1 class="mdc-card__title mdc-card__title">{{r.title}}</h1>
+                                    <br>
+                                    <h2 class="mdc-card__subtitle">{{r.subtitle}}</h2>
+                                </section>
+                                <section class="mdc-card__supporting-text">
+                                    {{r.formattedText}}
+                                </section>
+                                <section class="mdc-card__actions" v-for="button in r.buttons" :key="button">
+                                    <a class="mdc-button mdc-button--compact mdc-button--primary mdc-card__action" target="_blank" :href="button.openUrlAction.url">{{button.title}} <i class="material-icons openlink">open_in_new</i></a>
+                                </section>
                             </div>
+
+                            <!-- Bot message types / Carousel Card -->
+
+                            <div class="slider" v-if="r.type == 'carousel_card'">
+                                <carousel 
+                                        :perPage="1" 
+                                        :navigationEnabled="true"
+                                        :paginationEnabled="false"
+                                        navigationNextLabel="<button class='mdc-fab material-icons rightnav'><span class='mdc-fab__icon'>keyboard_arrow_right</span></button>"
+                                        navigationPrevLabel="<button class='mdc-fab material-icons leftnav'><span class='mdc-fab__icon'>keyboard_arrow_left</span></button>"
+                                        :navigationClickTargetSize="0"
+                                        :loop="true">
+
+                                    <slide v-for="item in r.items" :key="item.id">
+                                        <div class="mdc-card slide">
+                                            <img class="mdc-card__media-item" :src="item.image.url" v-if="item.image">
+                                            <section class="mdc-card__primary">
+                                                <h1 class="mdc-card__title mdc-card__title mdc-theme--primary" @click="autosubmit(item.optionInfo.key)">{{item.title}}</h1>
+                                            </section>
+                                            <section class="mdc-card__supporting-text">
+                                                {{item.description}}
+                                            </section>
+                                        </div>
+                                    </slide>
+                                </carousel>
+                            </div>
+
+                            <!-- Bot message types / List -->
+
+                            <div class="mdc-list-group mdc-card" v-if="r.type == 'list_card'">
+                                <h3 class="mdc-list-group__subheader">{{r.title}}</h3>
+                                <ul class="mdc-list mdc-list--two-line mdc-list--avatar-list" v-for="item in r.items" :key="item" @click="autosubmit(item.optionInfo.key)">
+                                    <li class="mdc-list-item">
+                                        <img :title="item.image.accessibilityText" :alt="item.image.accessibilityText" class="mdc-list-item__start-detail" width="56" height="56" :src="item.image.url" v-if="item.image"/>
+                                        <span class="mdc-list-item__text">
+                                            {{item.title}}
+                                        <span class="mdc-list-item__text__secondary">{{item.description}}</span>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Bot message types / Link Chip -->
+
+                            <div v-if="r.type == 'link_out_chip'" class="chips">
+                                <a class="suggestion link" :href="r.url" target="_blank">
+                                    {{r.destinationName}} <i class="material-icons openlink">open_in_new</i>
+                                </a>
+                            </div>
+
+                            <!-- Bot message types / Suggestion Chip -->
+
+                            <div v-if="r.type == 'suggestion_chips'" class="chips">
+                                <div class="suggestion" @click="autosubmit(s.title)" v-for="s in r.suggestions" :key="s">
+                                    {{s.title}}
+                                </div>
+                            </div>
+
                         </div>
+                    </td>
+                </tr>
+            </table>
 
-                    </div>
-                </td>
-            </tr>
-        </table>
+            <p class="copyright" v-if="answers.length > 0" id="bottom">
+                <span v-if="Config.features.about">
+                    {{ $t("about.developedBy") }} <a href="https://mish.io">Ushakov</a> & <a href="https://dialogflow.com">Dialogflow</a>
+                </span>
+            </p>
 
-        <p class="copyright" v-if="answers.length > 0" id="bottom">
-            <span v-if="Config.features.about">
-                {{ $t("about.developedBy") }} <a href="https://mish.io">Ushakov</a> & <a href="https://dialogflow.com">Dialogflow</a>
-            </span>
-        </p>
+        </main>
 
-    </main>
+    </div>
+
+    <div class="icon" :class="[displayed ? 'close':'open']" @click="displayed = !displayed" v-if="Config.features.closeable"></div>
+
 </section>
 </template>
 
@@ -166,14 +173,16 @@ $color: #E0001A
 
 #app
     position: absolute
-    height: 500px
-    width: 330px
+    height: 400px
+    width: 300px
     bottom: 40px
     right: 40px
+
+.app-wrapper
     box-shadow: grey 0px 0px 22px
-    background-color: #F2F2F2
     display: flex
     flex-direction: column
+    height: 100%
 
 .app-title
     height: 40px
@@ -191,11 +200,28 @@ body
     margin: 0
     font-family: 'Open Sans', sans-serif
 
+#app.closeable
+    margin-bottom: 70px
+
+.icon
+    background-repeat: no-repeat
+    height: 60px
+    width: 60px
+    background-size: 100%
+    position: absolute
+    bottom: -70px
+    right: 0
+    &.open
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABvUExURQAAAOQpP+xmdvGSnec6TvfAxvGUneY0Setba/CQnOpWaOxmdfCFkOY1SuMZMOYyRu+Ile+AjetbbO5teuhIWvGSnu59i+AAGv///+IRKeEFHv79/uQfNvGPmvWpsv709fvh5OlKXO97iPfAxvnP1G0sMa4AAAAXdFJOUwDwhn63ORj+/gtEpUmT8dxpqrws7rzgxZBfTgAAAz5JREFUWMPtmce6ozAMhWnBmJKQMh+4UAy8/zMOhBRAMi0sZjFndy/h93GXhGEsiFIa2tZTdtj+Yfwi9x5HD8KSjxh5RPHd3UsLLjJBJC/BDubpemGJVuxyPW3DBSZPZsXN4HQgbhvSXoPrkfYae85K3BPpLJmkvplskunPrkx6lclGsesMkUY82SzuaInU2cGbIe7k6Yk6HidelrfKKiW3EG/4b1VeFiLtJYqmwpk3yPuD+WNemU5U5AQj/pnyQoa5a1JERYb8loWT/YE0y7IixdUgvyajPePeYIdlnmpVeMgwDs/IGHZC1iKdIVbAARucFO4F9neW1054BoiXr0ULPOT5PK8lVuAd62MQnjAVzmsXYvlZlBV7633yuFqDssR5NZHQuijU6zVLN4JcM8ElSzJkgmo5tmgDg0SzALNnU0Uxxnmf97ndHzJgBLNUB0xIXVb1aCMO7TwPCRdsd1ZqgHX3kA0ej3Ht2Hd9toFBJeaWCs/EYEwnsjb1uJvmqmq+zRUMORgp2Oi8TtdKgemkRgx3SbkaCM4IHhsW3MZiNTBL4CDCIWTpD0DH8I4FegY5FkgMeSxQGsmxwOQ/8F8EsmOB7Ph1qI4FquP3cnQokEfIlbIBCLtnGy77AQiOKuYa9DsrLO+1mgdvPdVezNHy7SQ0t0wO7qOoi66//1WFJubCTQuw5HgXaVNzKUgSVYOH2qDHfbQULIVxOR5KCDjHQZ9RDHYfQYi1xMe2BgblK7cY3qSkmbpppIcaLOH19s7Q/GFTrCom/tBxEEhmwfxP2jg2Pgr2GZ4PwJi9u+Tf8iW+U0TptatdoHlKMmNwkom+gKJN6iTO6xqaz0hHqR57vZSRLgJGeEWO5bjjZM9mo+iraHKvfUlWJYZTaCY8ruHQQad55T0rci1OgLmtK4In/rdJfY0+QJPKm0oRpitLKFAkOJHkB0mkwhSe9/POIVYV8XcTzz5euNlL1PH2EvW8lmhu55nhYdXD/kRYqiBe2bZi33KJ8/5YbZI/wlVF2Ou6Iiw3r/TIMvE5OG0qZJPZseQkOG0ttccO0RUUpROf9nwNuMcR/BogL1F83/+9grq2FTmKPKWcyLLdhYn4C6tjzeViO/lsAAAAAElFTkSuQmCC')
+    &.close
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAACEUExURQAAAO99iPGSneY1Suc6Tuxkc/a8wt8AGfOkreY4TOQoPuxmdeIQKOxmdvCEkfSvtu5+jOtbbOUqQOYzR+lPYeAAGuADHf309eEIIeIXL/vj5ulSZOIQKOUrQehGWeQgNvzs7vWzu/KcpvSosetfb+1vfve/xfnP1Pra3u+CjvGQnP77+0d1VWYAAAAVdFJOUwAcfpO3RDb9Df70peuGrkxtvOjb67WmN6MAAAPqSURBVFjDrZnnloIwEIWRosSClUAgdCzo+7/fTkBdNYU6f/aIy3fuZZIZMmpaS9i2vdU3dehb+KCNCXu2M04Rdd9Bo5Oxmw2E2tbqSFxBkOPK6s+cO2LaU+nRmffDrZbYVQZeruYT4voh9S64Bql3kWf6bufwzXlrapdur1iqE247xO0ZxFEQbcN3e4dvSom2id0BgaXEYTw50Vy33bmAWC/Y3/rT+6qYuMeLdjGSf8F7nudgd+EODuz88izijgG61PrZH8gdGWj7tWD2eCwQ7z8TsyPu6KAflWJ2dCeI4+wN3OApgHjzFnjgN2iCIsW+9hFK+K8PL4k7TiCOyvwsJ9KoupcJf5chE4hJeQmulYyI0f0aXEKCJRJ1/j4aXtL0WiFf7Le6ekEWU/6bJtGm4KaouqYeaKQCv6DPSy/nRJDJukjMEpGKqLp43vXOuwa/N88Dnkg9YZ51YSnx0VnomsZVrU/8NNzNl+PFt0Yg1q6xwK8kX6ww2khS7BiRuf7U4sc5+M3Efutnb2tbLKueL9fvdOLab3BRrFC81Tbycowb13f0dE1R3uRXsYc2n4tmwW/Acwau88b102+p4i1MrVQ1jDozjWvwC+slyMpI2btDDSk7UOP6Bq4JAn2pWh8r3FqibmmN61seh4xXlElLpUs03NIjwXWWpre86OCXWdJamy6UMnAN0e6XRTuwcf14sPx2qOwdgJjAlgHg5UwmAWISF8HD8x5BjiieAEjDIoB6dYVcF4KiygGpGogJWy9Bdq6yANZj2KaRapF6YYNf4BVhEpVADPK45TlGWqwCYhoCJs2hIfmkLNJ217F2UgCZXzAK+kAWTsqidq3UeNIMRfli+WV+GwROwlbX0Jp1KRD0vfz+C04fQaEi6tqMSIDQ7f/9Pi/VroNc7hranh2KgU+DxdfNr4tSjTE0ZkMIBH3M728Knq4zmUb2dmP5AqDfpDQPf+sBaFS4xuxN2z7wQEVCQWPBPYrvt6UVB2R+Uy+4x6KNBotJ6nrVnACSXyD0N+ZX8uifGu8xV23J8yTAvX7Rcxbc5Au43uDQD7hNaH4cen57XVbF8sICxEpQv/8PPybfmUqk2rKYIEG/Mv/PZdwrIvZ9ZZkSfU+sz5PoBKeK/aRHPXhn+BqQ6HQsj37PcMafHvc/h3r7NI4Xc0OCbTSGF235GYG1Xg/mrS3RVMRaT8sbTFzIeAOJCh4QD/2BB0s9Pey5HrG5bZkg9hv4UafDiPPUWSSOrU5DWKfbEBYvHXvCMXGvuTNDIuULv49W876j9p0ZyZpUZO7mQ34NmO0Mfn5PjsZuNub3Cn1jmCGqIzSNjd72W8Ufx+2wiwy8H60AAAAASUVORK5CYII=')
+
 .wrapper.ai-window
     padding: 1rem
     height: 100%
     overflow-y: auto
     flex: 1
+    background-color: #F2F2F2
 
 .up, .down
     font-size: 32px
@@ -383,6 +409,7 @@ export default {
       speech: this.$i18n.t('generic.defaultSpeech'),
       micro: false,
       muted: !Config.speech,
+      displayed: !Config.features.closeable,
       online: navigator.onLine
     }
   },
