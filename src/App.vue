@@ -1,23 +1,25 @@
 <template>
 <section id ="app">
 
+    <div class="app-title" v-if="Config.features.title">
+        {{ $t("title") }}
+    </div>
+
     <!-- The input -->
     <div class="query">
         <div class="wrapper" v-if="micro == false">
-            <i class="material-icons iicon" @click="microphone(true)">mic</i>
+            <i class="material-icons iicon" v-if="Config.features.recognition" @click="microphone(true)">mic</i>
             <input :aria-label="$t('generic.inputPlaceholder')" autocomplete="off" v-model="query" class="queryform" @keyup.enter="submit()" :placeholder="$t('generic.inputPlaceholder')" autofocus type="text">
-            <i class="material-icons iicon t2s" @click="mute(true)" v-if="muted == false">volume_up</i>
-            <i class="material-icons iicon t2s" @click="mute(false)" v-else>volume_off</i>
+            <i class="material-icons iicon t2s" @click="mute(true)" v-if="Config.features.speech && muted == false">volume_up</i>
+            <i class="material-icons iicon t2s" @click="mute(false)" v-if="Config.features.speech && muted == true">volume_off</i>
         </div>
         <div class="wrapper" v-else>
-            <i class="material-icons iicon recording" @click="microphone(false)">mic</i><input class="queryform" :placeholder="speech" readonly>   
+            <i class="material-icons iicon recording" @click="microphone(false)">mic</i>
+            <input class="queryform" :placeholder="speech" readonly>   
         </div>
     </div>
 
     <main class="wrapper ai-window">
-
-        <br>
-        <br>
 
         <!-- Display Welcome Message -->
         <div v-if="answers.length == 0 && online == true">
@@ -141,7 +143,6 @@
             </tr>
         </table>
 
-        <br>
         <p class="copyright" v-if="answers.length > 0" id="bottom">
             <span v-if="Config.features.about">
                 {{ $t("about.developedBy") }} <a href="https://mish.io">Ushakov</a> & <a href="https://dialogflow.com">Dialogflow</a>
@@ -172,6 +173,17 @@ $color: #E0001A
     right: 40px
     box-shadow: grey 0px 0px 22px
     background-color: #F2F2F2
+    display: flex
+    flex-direction: column
+
+.app-title
+    height: 40px
+    display: flex
+    justify-content: center
+    align-items: center
+    color: white
+    font-weight: bold
+    background-color: var(--mdc-theme-primary)
 
 \:root
   --mdc-theme-primary: $color
@@ -188,8 +200,8 @@ body
 .wrapper.ai-window
     padding: 1rem
     height: 100%
-    overflow-y: scroll
-    box-sizing: border-box
+    overflow-y: auto
+    flex: 1
 
 .up
     font-size: 32px
@@ -205,17 +217,16 @@ body
     margin-top: 30%
 
 .query
-    padding: 16px 0px
     background-color: white
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
     z-index: 999
-    position: absolute
     width: 100%
 
 .query > .wrapper
     display: flex
     justify-content: space-between
     align-items: center
+    padding: 12px
 
 .queryform
     border: 0
@@ -224,6 +235,7 @@ body
     outline: none
     color: rgba(0,0,0,0.8)
     font-weight: 500
+    margin: 0 12px
 
     @media screen and (max-width: 320px)
         width: 100% - 35%
@@ -231,7 +243,6 @@ body
 .iicon
     color: rgba(0,0,0,0.8)
     cursor: pointer
-    margin: 0 12px
 
 .recording
     color: #F44336
@@ -369,13 +380,13 @@ export default {
   name: 'app',
   data: function() {
     return {
+      Config,
       answers: [],
       query: '',
       speech: this.$i18n.t('generic.defaultSpeech'),
       micro: false,
-      muted: false,
-      online: navigator.onLine,
-      Config
+      muted: !Config.speech,
+      online: navigator.onLine
     }
   },
   watch: {

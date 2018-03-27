@@ -1,5 +1,6 @@
 export default {
     en: {
+        title: 'Conversation',
         welcome: {
             title: 'Hello, ask something to get started',
             subtitle: 'You can type "Hello" for example. Or just press on the microphone to talk'
@@ -17,6 +18,7 @@ export default {
         }
     },
     fr: {
+        title: 'Conversation',
         welcome: {
             title: 'Bonjour, demandez quelque chose pour démarrer',
             subtitle: 'Vous pouvez taper "Bonjour" par exemple, ou simplement appuyer sur le micro pour parler'
