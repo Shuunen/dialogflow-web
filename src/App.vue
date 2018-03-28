@@ -472,12 +472,17 @@ export default {
         this.speech = this.$i18n.t('generic.defaultSpeech') // <- reset query and speech
       })
     },
-    frontapp(method, endpoint, data) {
-      return fetch(
+    frontapp(method, endpoint, body) {
+      const url =
         'https://cors-anywhere.herokuapp.com/https://api2.frontapp.com/' +
-          endpoint,
-        frontappOpts
-      ).then(data => data.json())
+        endpoint
+      let opts = Object.assign({}, frontappOpts)
+      if (body) {
+        opts.body = JSON.stringify(body)
+      }
+      opts.method = method
+      console.info('fetching with opts', opts)
+      return fetch(url, opts).then(data => data.json())
     },
     handle(response) {
       if (
@@ -527,10 +532,24 @@ export default {
     }
   },
   mounted() {
+    /*
     console.log('frontappOpts', frontappOpts)
     this.frontapp('get', '/teammates').then(teammates =>
       console.log('teammates', teammates)
     )
+    this.frontapp('get', '/inboxes').then(inboxes =>
+      console.log('inboxes', inboxes)
+    )
+    this.frontapp('get', '/channels').then(channels =>
+      console.log('channels', channels)
+    )
+    this.frontapp('post', '/channels/cha_7y4a/incoming_messages', {
+      sender: {
+        handle: 'chatbot-user-2' // this should be unique by user
+      },
+      body: 'Bonjour, comment récupérer mes courses ?'
+    })
+    */
   }
 }
 </script>
