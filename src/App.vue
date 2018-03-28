@@ -186,8 +186,8 @@ $grey: #F2F2F2
     position: absolute
     height: 400px
     width: 300px
-    bottom: 40px
-    right: 40px
+    bottom: 70px
+    right: 96px
 
 .app-wrapper
     box-shadow: grey 0px 0px 22px
@@ -411,7 +411,7 @@ td
 import { ApiAiClient } from 'api-ai-javascript'
 import Config from '../config'
 
-const client = new ApiAiClient({ accessToken: Config.dialogflow.accessToken })
+const client = new ApiAiClient({ accessToken: Config.dialogflow.accessToken, lang: Config.lang.display })
 
 export default {
   name: 'app',
