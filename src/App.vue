@@ -411,6 +411,28 @@ td
 import { ApiAiClient } from 'api-ai-javascript'
 import Config from '../config'
 
+/*
+ headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    Authorization: 'Bearer ' + Config.frontapp.accessToken,
+    Host: 'api2.frontapp.com',
+    Origin: 'http://localhost:8080'
+  },
+  credentials: 'same-origin',
+  mode: 'no-cors'
+  */
+
+const frontappOpts = {
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    Authorization: 'Bearer ' + Config.frontapp.accessToken,
+    Host: 'api2.frontapp.com',
+    Origin: 'http://localhost:8080'
+  }
+}
+
 const client = new ApiAiClient({
   accessToken: Config.dialogflow.accessToken,
   lang: Config.lang.display
@@ -449,6 +471,13 @@ export default {
         this.query = ''
         this.speech = this.$i18n.t('generic.defaultSpeech') // <- reset query and speech
       })
+    },
+    frontapp(method, endpoint, data) {
+      return fetch(
+        'https://cors-anywhere.herokuapp.com/https://api2.frontapp.com/' +
+          endpoint,
+        frontappOpts
+      ).then(data => data.json())
     },
     handle(response) {
       if (
@@ -496,6 +525,12 @@ export default {
         }
       }
     }
+  },
+  mounted() {
+    console.log('frontappOpts', frontappOpts)
+    this.frontapp('get', '/teammates').then(teammates =>
+      console.log('teammates', teammates)
+    )
   }
 }
 </script>
