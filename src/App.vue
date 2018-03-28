@@ -29,7 +29,7 @@
                 <h1 class="title mdc-typography--headline">
                     <div class="material-icons up" v-if="!Config.features.inputBottom">arrow_upward</div>
                     {{ $t("welcome.title") }}
-                    <p class="mdc-typography--body2">{{ $t("welcome.subtitle") }}</p>
+                    <p class="mdc-typography--body2">{{ $t("welcome.subtitle") + (Config.features.recognition ? $t("welcome.subtitleMic"):'') }}</p>
                     <div class="material-icons down" v-if="Config.features.inputBottom">arrow_downward</div>
                 </h1>
             </div>
@@ -411,7 +411,10 @@ td
 import { ApiAiClient } from 'api-ai-javascript'
 import Config from '../config'
 
-const client = new ApiAiClient({ accessToken: Config.dialogflow.accessToken, lang: Config.lang.display })
+const client = new ApiAiClient({
+  accessToken: Config.dialogflow.accessToken,
+  lang: Config.lang.display
+})
 
 export default {
   name: 'app',
